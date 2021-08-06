@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# code updated 070121 Amber
+
 import warnings
 warnings.filterwarnings("error")
 
@@ -19,7 +21,7 @@ import pygame
 
 from protocols.globalsPython3 import *
 
-from lib.sliderPython3 import sliderUSB as slider
+from lib.sliderPython3 import slider as slider
 
 args = sys.argv
 
@@ -53,7 +55,7 @@ subject_dir = os.path.join('data',subject)
 def dbg(s):
   print(s)
 
-#COM_PORT = 'COM9'
+# COM_PORT = 'COM3'
 #COM_PORT = '/dev/cu.usbmodem141131' # Sam home
 #COM_PORT = '/dev/cu.usbmodem141111' # Sam office
 COM_PORT = None
@@ -78,7 +80,7 @@ else:
 
   dbg('COM_PORT='+COM_PORT)
   joy.startArduino()
-
+  
 if not os.path.exists(subject_dir):
   os.mkdir(subject_dir)
 
@@ -224,8 +226,14 @@ clock = pygame.time.Clock()
 
 oldrects = []
 
-def rescale_inp(inp,MIN=SLIDER_MIN,MAX=SLIDER_MAX):
-  return 2 * ( (inp - MIN) / (MAX - MIN) - .5) * trial['scale'] * (3./2.)
+#original
+# def rescale_inp(inp,MIN=SLIDER_MIN,MAX=SLIDER_MAX):
+#     return 2 * ( (inp - MIN) / (MAX - MIN) - .5) * trial['scale'] * (3./2.)
+
+def rescale_inp(inp):
+    MIN = -127.5
+    MAX = 127.5
+    return 2 * ( (inp - MIN) / (MAX - MIN) - .5) * trial['scale'] * (3./2.)
 
 try:
   trial = trial_gen.__next__()
@@ -318,7 +326,8 @@ def savereact(sfx='',csv=True,**trial_data):
 if COM_PORT is None:
   inp = lambda time,state : 0.
 else:
-  inp = lambda time,state : rescale_inp(joy.grabData()[1])
+  inp = lambda time,state : rescale_inp(joy.grabData())
+  # inp = lambda time,state : rescale_inp(joy.grabData()[1])
 #
 TRIAL_STATE = 'reset1'
 trial = trial_reset
@@ -404,7 +413,8 @@ while not done:
             screen = pygame.display.set_mode(size,pygame.FULLSCREEN)
             FULLSCREEN = True
         elif event.key == pygame.K_s and COM_PORT is not None:
-          inp = lambda time,state : rescale_inp(joy.grabData()[1])
+          inp = lambda time,state : rescale_inp(joy.grabData())
+          # inp = lambda time,state : rescale_inp(joy.grabData()[1])
         elif event.key == pygame.K_r:
           cmt = raw_input("> why reject? ")
           save(time_=time_,realtime_=realtime_,state_=state_,
@@ -652,7 +662,8 @@ while not done:
         (len(inp_), time_[-1], clock.get_fps(), _inp, state))
 
 if COM_PORT is not None:
-  joy.stopArduino()
+  joy.close()
+  # joy.stopArduino()
 pygame.display.quit()
 pygame.quit()
 sys.exit(0)

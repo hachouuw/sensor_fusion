@@ -1,0 +1,207 @@
+2019/06/19
+- run experiment5.py with EMGinput5.py
+- run with su19so as the protocol name to do second order
+- run with su19fo as the protocol name to do first order
+- get rid of lag with import gc; gc.disable()
+
+
+2019/06/12
+- MAX_1 = 0.00040226957135721585 
+- MAX_2 = 0.00017294896190067142
+- fixed error with game moving slower - because list was getting too long so shortened data list to only keep last 1 second worth of data 
+- can't figure out how to edit to have longer preview - made trash.py file to mess around in 
+- still need to decrease lowest measured frequency
+
+2019/06/11
+- implemented 3 MVIC trials
+- edited method to compute MVIC
+- detrended EMG data with 50 ms windows
+- issues with game moving slower than usual - detrending taking too long?
+- MAX_1 = 0.0002588162573038561
+- MAX_2 = 0.00046881086409240446
+- need to edit to have longer preview
+- need to decrease lowest measured frequency 
+
+2019/05/21
+- way to zero out the two values 
+- maybe have some kind of visual
+- too much movement = issues with data so maybe have a handle they can hold where they can't actually move 
+- take the average of 3 or something
+- rest before each trial? potentially? or at theend of calibration 
+- maybe do 3 one second trials instead of one 5 second trials 
+
+
+2019/05/17
+- IT WORKSSSSS!!! 
+- maybe do kernel averaging instead of mean -> the average is very shakey and hard to hold still 
+- concerns with co-activation for certain muscles -> not sure how we can change that? maybe change the rescale_inp to if its greater than or less than a certain number only use input from that one muscle instead of subtracting?
+
+2019/05/16
+- experimentEMG.py and EMGinput.py works with biceps!! using delsys electrode 2 
+- for some reason not working with 2 - testing now
+- experimentEMG3.py and EMGinput3.py - although I am putting in 2 things into q, it thinks there's only 1 (refer to error)
+-- it was because I was pulling in run_EMG instead of run_EMG2
+-next time:
+-- combine input 1 and input 2 to create up and down
+-- create method to calibrate
+
+2019/05/15
+- created new environment (MYenv2) that has the right python version and pygames and serial version so that the game will run
+- experimentEMGTEST.py works as long as two threads are started
+- experimentEMG.py runs with threading!!!! - next need to get it working with EMG input
+- issues: minimum should not be 0 because RMS makes not moving not equal to 0 large enough that it's preventing it from going to the center. WIll need to play around with EMG_MIN
+- may need to play with 200 ms windowing because it seems to go to 0 even though I am continuously flexing (may need larger window)
+- incorporate 2 delsys sensors into it
+- what I found:
+---- run experimentEMG.py first and then run TCPtest.py. Game will not run until TCPtest.py is started. 
+
+2019/05/10
+EMGinput.py messing around 
+- found out for sensor 2 is from temp[4:8] and then sensor 1 is from temp[0:4] so as suspected, 16 channels means the 16 different electrode channels 
+- I think everything in EMGinput works - 200 ms seems to work well to smooth the data. Now need to incorporate with main experimentEMG.py
+- probaby reason why it's not running is version issues with python or numpy or both 
+
+
+
+2019/05/09
+
+EMGinput.py messing around 
+- appears to be running in real time without threading - need to check whether it also runs in real time with threading
+- currently loop run at 5 seconds 10000/2000 = 5 seconds to run except needs to start at almost the same time as the TCPtest.py code start or else hangs on the first recv and takes forever
+- then need to go and check to make sure still running in real time with the other thread.
+- haven't figured out why code doesn't run on the main experimentpython3.py code (need to figure out next time)
+
+
+2019/05/06
+
+Updated TCPtest.py and EMGread.py
+
+--
+INSTRUCTIONS
+cd Documents/Yamagami EMG/hcps
+activate MYenv2
+ipython
+run experimentEMGTEST.py
+
+
+INSTRUCTIONS
+F:
+cd Steele Lab/Yamagami_EMG/hcps
+activate MYenv
+ipython
+
+
+2 files: TCPtest.py, EMGread.py
+
+To connect TCP/IP: 
+ipython
+run TCPtest.py
+MASTER
+SENSOR 1 PAIR
+START
+(keep pressing enter to see messages from Delsys)
+
+To run EMGread.py
+
+
+
+	
+--
+dynamic inverse modeling in human-cyber-physical systems
+
+--
+AUTHORS
+
+Sam Burden
+Eatai Roth
+Darrin Howell
+Momona Yamagami
+
+Electrical Engineering
+Mechanical Engineering
+Biology
+University of Washington
+Seattle WA USA
+
+
+--
+INSTRUCTIONS
+
+start ipython:
+$ ipython
+
+to run experiment:
+> run experiment subject protocol port 
+
+to see a list of serial devices and ports:
+> run lib/print_serial
+
+to generate a random 2-letter subject id:
+> run lib/generate_subject_id
+
+the port on my OSX 10.10.5 MacBook looks like: 
+  /dev/cu.usbmodem141131
+
+on Windows it'll look like:
+  COM3
+
+during experiment:
+r - reset
+q - quit
+spacebar - pause / unpause
+
+to analyze experimental data:
+> run analysis subject protocol
+> run analysis subj1,subj2 protocol
+> run analysis subject proto1,proto2
+> run analysis subj1,subj2 proto1,proto2
+> run analysis subj1,subj2 proto1,proto2 png,pdf
+
+to generate visualizations for presentations:
+> run visualization subject protocol mp4 # video
+> run visualization subject protocol png,pdf # still images
+> run visualization subject protocol mp4,png,pdf # everything
+
+--
+PROTOCOLS
+
+spie1
+- ask subject what's different between fo and zd12
+
+spie2
+- ask subject what's different relative to spie1
+
+su17
+
+
+-- UPDATED 2021/5/24 Amber Chou
+
+1. create virtual environment for python 3.5.4, [your path] -m venv venv35, for example:
+$ /Users/amber/AppData/Local/Programs/Python/Python35/python.exe -m venv venv35
+and then activate the virtual environment
+venv35\Scripts\activate.bat
+
+2. install correct versions of packages
+$ pip install numpy==1.14.3
+$ pip install -U matplotlib 
+$ pip install ipython==6.1.0
+$ pip install pygame==1.9.2
+$ pip install pyserial==3.2.1
+
+3. change to hcps directory, for example: 
+$ cd /path/to/hcps/directory
+
+4. start ipython:
+$ ipython
+alternative: 
+$ python
+$ python -m IPython
+or:
+$ import IPython
+$ IPython.embed()
+
+5. run experiment
+In [1]: run experiment subject protocol port 
+for example: run experimentPython3 subject0 su19fo
+
+(Note: if using keyboard, press down to start the game, and then use left and right to control the diamond)
